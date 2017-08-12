@@ -1,0 +1,224 @@
+---
+title: \Large{"Revisiting the Biological Value Index (Sanders, 1960), Contribution to its calculation and visualization"}
+fontsize: 12pt
+output:
+  pdf_document:
+    fig_caption: yes
+    fig_width: 5
+    keep_tex: yes
+header-includes:
+- \usepackage{setspace}
+- \doublespacing
+- \usepackage{lineno}
+- \linenumbers
+bibliography:
+- exported-references.bib
+- packages.bib
+csl: peerj.csl
+---
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { 
+      equationNumbers: { 
+            autoNumber: "all",
+            formatNumber: function (n) {return '9.'+n}
+      } 
+  }
+});
+</script>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F)
+
+suppressPackageStartupMessages({
+  library(knitr)
+  library(kableExtra)
+  library(magrittr)
+  library(tidyverse)
+})
+
+```
+
+Juan Carlos Villaseñor-Derbez^1^, Arturo Ramírez-Valdez^2^
+
+^1^Bren School of Environmental Science & Management University of California at Santa Barbara, Santa Barbara, California, USA
+
+^2^SCRIPPS Institution of Oceanography, University of California at San Diego, San Diego, California, USA
+
+Corresponding author: 
+Juan Carlos Villaseñor-Derbez^1^
+
+Email address:  
+jvillasenor@bren.ucsb.edu
+
+\clearpage
+
+Abstract: 
+No more than approx. 500 words (or 3,000 characters).
+
+#Introduction
+
+- Indices in ecology
+
+- History of the index
+	  - When it was proposed
+	  - How it worked
+	  - Modifications by Loya Salinas
+	  - How it works now
+	
+- Usage of the index 
+	  - Works that have used it
+	
+- Stating the problem
+    - Lack of comparison
+    - computability
+
+# Materials and Methods
+
+```{r}
+data <- read_csv("data/data.csv", col_types = cols())
+```
+
+
+- How the index works, step by step (possibly citing Loya-Salinas)
+
+- Flow diagram depfun(ivb)
+
+- Adding the %BVI
+
+\begin{equation}\%BVI_i = \frac{(100\times BVI_i)}{\sum_{i = 1}^nBVI_i}\end{equation}
+
+- Compare N and Ni vs rBVI to test its usefulness
+
+- Propose ways to visualize rBVI
+
+- Recreating Loya-Salinas
+
+```{r}
+source('~/GitHub/bvi/bvi.R')
+source('~/GitHub/bvi/bvi_plot.R')
+source('~/GitHub/bvi/bvi_col.R')
+source('~/GitHub/bvi/bvi_boxplot.R')
+```
+
+	
+```{r}
+knitr::kable(data, digits = 2,
+             format = "latex",
+             booktabs = T) %>% 
+  kableExtra::column_spec(column = 1,
+                          italic = T)
+```
+
+- Mention using SIMPER as a comparative
+- Propose a graph to visualize data
+
+# Results
+
+- Results from Loya-Salinas
+- Graph
+- Comparing %BVI with SIMPER
+- Table with abundances, BVI, %BVI and SIMPER
+
+```{r}
+bvi(data) %>% 
+  rbind(data.frame(Spp = "Total",
+                   S1 = "",
+                   S2 = "",
+                   S3 = "",
+                   S4 = "",
+                   S5 = "",
+                   S6 = "",
+                   BVI = "",
+                   rBVI = 100,
+                   stringsAsFactors = F)) %>% 
+  knitr::kable(digits = 2,
+               format = "latex",
+               booktabs = T, 
+               col.names = c("Species", "S1", "S2", "S3", "S4", "S5", "S6", "BVI", "%BVI")) %>% 
+  kableExtra::column_spec(column = 1,
+                          italic = T)
+```
+
+```{r}
+rel_abundance <- data %>%
+  gather(Sample, Abundance, -Spp) %>% 
+  group_by(Sample) %>% 
+  summarize(N = sum(Abundance))
+  
+
+abundances <- data %>% 
+  gather(Sample, Abundance, -Spp) %>% 
+  left_join(rel_abundance, by = "Sample") %>% 
+  mutate(RelAbundance = Abundance/N,
+         Abundance = log10(Abundance)) %>% 
+  select(-N) %>% 
+  filter(Abundance > 0)
+
+compare_indices <- data %>% 
+  bvi(others = F) %>% 
+  select(Spp, BVI, rBVI) %>% 
+  left_join(abundances, by = "Spp")
+```
+
+
+```{r, results = "asis"}
+model1 <- lm(Abundance ~ rBVI, data = compare_indices)
+model2 <- lm(RelAbundance ~ rBVI, data = compare_indices)
+
+stargazer::stargazer(model1, model2,
+                     header = F,
+                     single.row = T)
+```
+
+
+```{r, fig.width = 6.5, fig.height = 6.5}
+p1 <- compare_indices %>% 
+  ggplot(aes(x = rBVI/100, y = Abundance)) +
+  geom_smooth(method = "lm", color = "black", linetype = "dashed", alpha = 0.3) +
+  geom_point(aes(color = Spp)) +
+  theme_bw() +
+  scale_x_continuous(labels = scales::percent) +
+  labs(x = "relative BVI", y = "log10(N)") +
+  geom_text(aes(x = 0, y = 3.75, label = "a)")) +
+  labs(x = "") +
+  theme(text = element_text(size = 10))
+
+p2 <- compare_indices %>% 
+  ggplot(aes(x = rBVI/100, y = RelAbundance)) +
+  geom_smooth(method = "lm", color = "black", linetype = "dashed", alpha = 0.3) +
+  geom_point(aes(color = Spp)) +
+  theme_bw() +
+  scale_x_continuous(labels = scales::percent) +
+  labs(x = "relative BVI", y = "n/N") +
+  geom_text(aes(x = 0, y = 0.75, label = "a)")) +
+  theme(text = element_text(size = 10))
+
+gridExtra::grid.arrange(p1, p2)
+```
+
+```{r, fig.width = 6.5, fig.height = 6.5}
+plot2 <- data %>% 
+  bvi() %>% 
+  bvi_col()
+
+plot3 <- data %>% 
+  bvi() %>% 
+  bvi_boxplot()
+
+gridExtra::grid.arrange(plot2, plot3, ncol = 1)
+```
+
+```{r}
+
+```
+
+
+# Discussion and Conclusions
+
+# References
+
+<div id="refs"></div>
+
+# Figures and Tables
