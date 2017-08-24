@@ -17,6 +17,11 @@
 
 bvi <- function(data, taxunits = "Spp", p = 0.95, others = T){
   
+  # Make sure that taxunits is present
+  if(!taxunits %in% colnames(data)){
+    stop(paste0("Variable '", taxunits, "' not present in supplied data"))
+  }
+  
   #Test that the cutoff percentage is between 0 and 1
   if (p > 1 | p < 0){
     stop("Your cutoff percentage must be between 0 and 1")

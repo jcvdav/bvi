@@ -1,5 +1,5 @@
 ---
-title: \Large{"Revisiting the Biological Value Index (Sanders, 1960), Contribution to its calculation and visualization"}
+title: \Large{Revisiting the Biological Value Index (Sanders, 1960); Contribution to its calculation and visualization}
 fontsize: 12pt
 output:
   pdf_document:
@@ -61,6 +61,8 @@ No more than approx. 500 words (or 3,000 characters).
 
 - Indices in ecology
 
+Usualy people describe a site by the species that inhabit it, but do not pay much attention to how some species are incharged of the simmilarities.
+
 - History of the index
 	  - When it was proposed
 	  - How it worked
@@ -104,9 +106,10 @@ source('~/GitHub/bvi/bvi_boxplot.R')
 
 	
 ```{r}
-knitr::kable(data, digits = 2,
-             format = "latex",
-             booktabs = T) %>% 
+data %>% 
+  kable(digits = 2,
+        format = "latex",
+        booktabs = T) %>% 
   kableExtra::column_spec(column = 1,
                           italic = T)
 ```
@@ -146,7 +149,6 @@ rel_abundance <- data %>%
   gather(Sample, Abundance, -Spp) %>% 
   group_by(Sample) %>% 
   summarize(N = sum(Abundance))
-  
 
 abundances <- data %>% 
   gather(Sample, Abundance, -Spp) %>% 
@@ -156,44 +158,59 @@ abundances <- data %>%
   select(-N) %>% 
   filter(Abundance > 0)
 
+shortSpp <- data.frame(Species = c("Synchelidium spp.", "Tridentella spp.", "N. cirratulus", "N. californiensis", "G. tenuis", "D. gouldii", "O. benedicti", "Archaeomysis spp.", "Armadillium spp.", "Megalopus spp.", "E. analoga", "Pontharpinia spp.", "E. mucronata", "L. californica", "M. californica", "Hanstorina spp.", "G. dibranchiata", "A. maculata"), 
+                       Spp = c("Synchelidium spp.", "Tridentella spp.", "Nerine cirratulus", "Nephtys californiensis", "Glycera tenuis", "Donax gouldii", "Orchestoidea benedicti", "Archaeomysis spp.", "Armadillium spp.", "Megalopus spp.", "Emerita analoga", "Pontharpinia spp.", "Euzonus mucronata", "Lepidopa californica", "Magelona californica", "Hanstorina spp.", "Glycera dibranchiata", "Archaeomysis maculata"), stringsAsFactors = F)
+
 compare_indices <- data %>% 
   bvi(others = F) %>% 
   select(Spp, BVI, rBVI) %>% 
-  left_join(abundances, by = "Spp")
+  left_join(abundances, by = "Spp") %>% 
+  left_join(shortSpp, by = "Spp")
 ```
 
 
 ```{r, results = "asis"}
-model1 <- lm(Abundance ~ rBVI, data = compare_indices)
-model2 <- lm(RelAbundance ~ rBVI, data = compare_indices)
+model1 <- lm(RelAbundance ~ rBVI, data = compare_indices)
+model2 <- lm(Abundance ~ rBVI, data = compare_indices)
+
 
 stargazer::stargazer(model1, model2,
                      header = F,
-                     single.row = T)
+                     single.row = T, 
+                     keep.stat = c("f", "n", "rsq", "ser", "wald"), dep.var.labels = c("%N", "log10(n)"))
 ```
 
+\clearpage
 
 ```{r, fig.width = 6.5, fig.height = 6.5}
 p1 <- compare_indices %>% 
-  ggplot(aes(x = rBVI/100, y = Abundance)) +
-  geom_smooth(method = "lm", color = "black", linetype = "dashed", alpha = 0.3) +
-  geom_point(aes(color = Spp)) +
-  theme_bw() +
-  scale_x_continuous(labels = scales::percent) +
-  labs(x = "relative BVI", y = "log10(N)") +
-  geom_text(aes(x = 0, y = 3.75, label = "a)")) +
-  labs(x = "") +
-  theme(text = element_text(size = 10))
-
-p2 <- compare_indices %>% 
   ggplot(aes(x = rBVI/100, y = RelAbundance)) +
   geom_smooth(method = "lm", color = "black", linetype = "dashed", alpha = 0.3) +
-  geom_point(aes(color = Spp)) +
+  geom_point(aes(fill = Species), pch = 21, color = "black", size = 2, alpha = 0.5) +
   theme_bw() +
   scale_x_continuous(labels = scales::percent) +
-  labs(x = "relative BVI", y = "n/N") +
-  geom_text(aes(x = 0, y = 0.75, label = "a)")) +
-  theme(text = element_text(size = 10))
+  labs(x = "relative BVI", y = "%N") +
+  geom_text(aes(x = 0, y = 0.75, label = "b)")) +
+  theme(text = element_text(size = 10),
+        legend.justification = c(0.5, 1),
+        legend.position = c(0.5,1.05),
+        legend.background = element_rect(fill = "transparent"),
+        legend.title = element_blank(),
+        legend.text = element_text(size = 8),
+        legend.key = element_rect(fill = "transparent")) +
+  guides(fill = guide_legend(ncol = 4))
+
+p2 <- compare_indices %>% 
+  ggplot(aes(x = rBVI/100, y = Abundance)) +
+  geom_smooth(method = "lm", color = "black", linetype = "dashed", alpha = 0.3) +
+  geom_point(aes(fill = Species), pch = 21, color = "black", size = 2, alpha = 0.5) +
+  theme_bw() +
+  scale_x_continuous(labels = scales::percent) +
+  labs(x = "relative BVI", y = "log10(n)") +
+  geom_text(aes(x = 0, y = 3.75, label = "a)")) +
+  labs(x = "") +
+  theme(text = element_text(size = 10),
+        legend.position = "None")
 
 gridExtra::grid.arrange(p1, p2)
 ```
@@ -210,10 +227,6 @@ plot3 <- data %>%
 gridExtra::grid.arrange(plot2, plot3, ncol = 1)
 ```
 
-```{r}
-
-```
-
 
 # Discussion and Conclusions
 
@@ -222,3 +235,5 @@ gridExtra::grid.arrange(plot2, plot3, ncol = 1)
 <div id="refs"></div>
 
 # Figures and Tables
+
+

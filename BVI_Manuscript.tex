@@ -71,7 +71,7 @@
 }
 
 \setlength{\droptitle}{-2em}
-  \title{\Large{"Revisiting the Biological Value Index (Sanders, 1960), Contribution to its calculation and visualization"}}
+  \title{\Large{Revisiting the Biological Value Index (Sanders, 1960); Contribution to its calculation and visualization}}
   \pretitle{\vspace{\droptitle}\centering\huge}
   \posttitle{\par}
   \author{}
@@ -115,8 +115,17 @@ Abstract: No more than approx. 500 words (or 3,000 characters).
 \section{Introduction}\label{introduction}
 
 \begin{itemize}
+\tightlist
 \item
   Indices in ecology
+\end{itemize}
+
+Usualy people describe a site by the species that inhabit it, but do not
+pay much attention to how some species are incharged of the
+simmilarities.
+
+\begin{itemize}
+\tightlist
 \item
   History of the index
 
@@ -252,22 +261,23 @@ Total &  &  &  &  &  &  &  & 100.00\\
 \hline \\[-1.8ex] 
  & \multicolumn{2}{c}{\textit{Dependent variable:}} \\ 
 \cline{2-3} 
-\\[-1.8ex] & Abundance & RelAbundance \\ 
+\\[-1.8ex] & %N & log10(n) \\ 
 \\[-1.8ex] & (1) & (2)\\ 
 \hline \\[-1.8ex] 
- rBVI & 0.118$^{***}$ (0.010) & 0.016$^{***}$ (0.002) \\ 
-  Constant & 1.189$^{***}$ (0.090) & $-$0.040$^{**}$ (0.016) \\ 
+ rBVI & 0.016$^{***}$ (0.002) & 0.118$^{***}$ (0.010) \\ 
+  Constant & $-$0.040$^{**}$ (0.016) & 1.189$^{***}$ (0.090) \\ 
  \hline \\[-1.8ex] 
 Observations & 81 & 81 \\ 
-R$^{2}$ & 0.636 & 0.489 \\ 
-Adjusted R$^{2}$ & 0.632 & 0.482 \\ 
-Residual Std. Error (df = 79) & 0.482 & 0.088 \\ 
-F Statistic (df = 1; 79) & 138.264$^{***}$ & 75.486$^{***}$ \\ 
+R$^{2}$ & 0.489 & 0.636 \\ 
+Residual Std. Error (df = 79) & 0.088 & 0.482 \\ 
+F Statistic (df = 1; 79) & 75.486$^{***}$ & 138.264$^{***}$ \\ 
 \hline 
 \hline \\[-1.8ex] 
 \textit{Note:}  & \multicolumn{2}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\ 
 \end{tabular} 
 \end{table}
+
+\clearpage
 
 \includegraphics{BVI_Manuscript_files/figure-latex/unnamed-chunk-7-1.pdf}
 

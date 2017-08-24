@@ -12,11 +12,10 @@ bvi_boxplot <- function(bvi_scores){
     transform(Spp = reorder(Spp, Score)) %>% 
     ggplot(aes(x = Spp, y = Score)) +
     geom_boxplot(outlier.shape = NULL,
-                 outlier.colour = "red",
                  outlier.alpha = 0,
                  fill = "gray",
                  alpha = 0.5) +
-    geom_point(aes(color = Sample), size = 2) +
+    geom_point(aes(fill = Sample), pch = 21, color = "black", size = 2, alpha = 0.5) +
     theme_bw() +
     coord_flip() +
     labs(x = taxunits, y = "Score")
