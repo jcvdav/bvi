@@ -1,32 +1,16 @@
 ---
-title: \Large{Revisiting the Biological Value Index (Sanders, 1960); Contribution to its calculation and visualization}
-fontsize: 12pt
+title: "Computational calculation and visualization of the Biological Value Index"
+author:
+  - Juan Carlos Villaseñor-Derbez^[Bren School, john@example.org]
+  - Ricardo Dominguez-Reza^[CICESE, jane@example.org]
+  - Los que falten
 output:
-  pdf_document:
+  bookdown::pdf_document2:
     fig_caption: yes
     fig_width: 5
     keep_tex: yes
-header-includes:
-- \usepackage{setspace}
-- \doublespacing
-- \usepackage{lineno}
-- \linenumbers
-bibliography:
-- exported-references.bib
-- packages.bib
-csl: peerj.csl
+abstract: "Abstract goes here"
 ---
-
-<script type="text/x-mathjax-config">
-MathJax.Hub.Config({
-  TeX: { 
-      equationNumbers: { 
-            autoNumber: "all",
-            formatNumber: function (n) {return '9.'+n}
-      } 
-  }
-});
-</script>
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = F)
@@ -40,28 +24,13 @@ suppressPackageStartupMessages({
 
 ```
 
-Juan Carlos Villaseñor-Derbez^1^, Arturo Ramírez-Valdez^2^
-
-^1^Bren School of Environmental Science & Management University of California at Santa Barbara, Santa Barbara, California, USA
-
-^2^SCRIPPS Institution of Oceanography, University of California at San Diego, San Diego, California, USA
-
-Corresponding author: 
-Juan Carlos Villaseñor-Derbez^1^
-
-Email address:  
-jvillasenor@bren.ucsb.edu
-
-\clearpage
-
-Abstract: 
-No more than approx. 500 words (or 3,000 characters).
-
 #Introduction
+
+Todo esto es mierda, tengo que modificarlo
 
 - Indices in ecology
 
-Usualy people describe a site by the species that inhabit it, but do not pay much attention to how some species are incharged of the simmilarities.
+Usually people describe a site by the species that inhabit it, but do not pay much attention to how some species are incharged of the simmilarities.
 
 - History of the index
 	  - When it was proposed
@@ -79,7 +48,7 @@ Usualy people describe a site by the species that inhabit it, but do not pay muc
 # Materials and Methods
 
 ```{r}
-data <- read_csv("data/data.csv", col_types = cols())
+data <- read_csv(here::here("data", "data.csv"), col_types = cols())
 ```
 
 
@@ -98,10 +67,10 @@ data <- read_csv("data/data.csv", col_types = cols())
 - Recreating Loya-Salinas
 
 ```{r}
-source('~/GitHub/bvi/bvi.R')
-source('~/GitHub/bvi/bvi_plot.R')
-source('~/GitHub/bvi/bvi_col.R')
-source('~/GitHub/bvi/bvi_boxplot.R')
+source(here::here('bvi.R'))
+source(here::here('bvi_plot.R'))
+source(here::here('bvi_col.R'))
+source(here::here('bvi_boxplot.R'))
 ```
 
 	
